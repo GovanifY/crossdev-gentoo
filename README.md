@@ -45,8 +45,8 @@ _boost_), that portage isn't aware of. So let's start off by deleting the
 old environment(s).
 
 ```bash
-crossdev -C x86_64-pc-mingw32
-crossdev -C i686-pc-mingw32
+crossdev -C x86_64-w64-mingw32
+crossdev -C i686-w64-mingw32
 ```
 
 If crossdev asks if you want to delete the directory, answer _yes_.
@@ -56,8 +56,8 @@ If crossdev asks if you want to delete the directory, answer _yes_.
 Setup in new toolchain environment(s) with:
 
 ```bash
-crossdev -t x86_64-pc-mingw32 --stable --init-target -oO /usr/local/portage/crossdev
-crossdev -t i686-pc-mingw32 --stable --init-target -oO /usr/local/portage/crossdev
+crossdev -t x86_64-w64-mingw32 --stable --init-target -oO /usr/local/portage/crossdev
+crossdev -t i686-w64-mingw32 --stable --init-target -oO /usr/local/portage/crossdev
 ```
 
 where the directory after *-oO* should be the same as the *location*
@@ -72,8 +72,8 @@ install.
 Make sure `gcc` is **not** compiled with the *sanitize* flag.
 
 ```bash
-echo "cross-x86_64-pc-mingw32/gcc -sanitize" >> /etc/portage/package.use/crossdev
-echo "cross-i686-pc-mingw32/gcc -sanitize" >> /etc/portage/package.use/crossdev
+echo "cross-x86_64-w64-mingw32/gcc -sanitize" >> /etc/portage/package.use/crossdev
+echo "cross-i686-w64-mingw32/gcc -sanitize" >> /etc/portage/package.use/crossdev
 ```
 
 ## Install environment
@@ -82,8 +82,8 @@ Now we can finally install the environment. Issue the following commands and
 wait for them to complete.
 
 ```bash
-crossdev -t x86_64-pc-mingw32 --stable -oO /usr/local/portage/crossdev
-crossdev -t i686-pc-mingw32 --stable -oO /usr/local/portage/crossdev
+crossdev -t x86_64-w64-mingw32 --stable -oO /usr/local/portage/crossdev
+crossdev -t i686-w64-mingw32 --stable -oO /usr/local/portage/crossdev
 ```
 
 ## Extra packages
@@ -96,7 +96,7 @@ do this, we will instruct portage to apply a patch when it installs bzip2.
 First, make the directory structure where the patch will be placed:
 
 ```bash
-mkdir -p /usr/i686-pc-mingw32/etc/portage/patches/app-arch/bzip2
+mkdir -p /usr/i686-w64-mingw32/etc/portage/patches/app-arch/bzip2
 ```
 
 and now copy the patch from
@@ -104,14 +104,14 @@ and now copy the patch from
 newly created directory.
 
 ```bash
-cp bzip2/ftello64-fseeko64.patch /usr/i686-pc-mingw32/etc/portage/patches/app-arch/bzip2/
+cp bzip2/ftello64-fseeko64.patch /usr/i686-w64-mingw32/etc/portage/patches/app-arch/bzip2/
 ```
 
 We also need to little script to instruct portage to apply our patch. Copy
 bashrc from [bzip2/bashrc](bzip2/bashrc):
 
 ```bash
-cp -p bzip2/bashrc /usr/i686-pc-mingw32/etc/portage/bashrc
+cp -p bzip2/bashrc /usr/i686-w64-mingw32/etc/portage/bashrc
 ```
 
 That should let bzip2 install when emerging the [Boost library](#boost-library)
@@ -123,8 +123,8 @@ install dependencies like zlib and bzip2, and download the tarball to
 portage DISTDIR for us.
 
 ```bash
-USE="static-libs" ARCH=amd64 x86_64-pc-mingw32-emerge -avt boost
-USE="static-libs" ARCH=x86   i686-pc-mingw32-emerge   -avt boost
+USE="static-libs" ARCH=amd64 x86_64-w64-mingw32-emerge -avt boost
+USE="static-libs" ARCH=x86   i686-w64-mingw32-emerge   -avt boost
 ```
 
 Let `emerge` run until it fails on _boost_, all the required packages should
@@ -135,8 +135,8 @@ As a side note, it is convenient to know a way to show which packages have
 been installed via emerge into our toolchain environments:
 
 ```bash
-ROOT=/usr/x86_64-pc-mingw32 eix -I --only-names
-ROOT=/usr/i686-pc-mingw32   eix -I --only-names
+ROOT=/usr/x86_64-w64-mingw32 eix -I --only-names
+ROOT=/usr/i686-w64-mingw32   eix -I --only-names
 ```
 #### Manually install Boost
 Extract the boost tarball that was downloaded into portage DISTDIR.
@@ -163,21 +163,6 @@ directory, then use
 ~/crossdev-boost.sh
 ```
 
-### winpthreads
-
-To install winpthreads, first download the latest version of
-[MinGW-w64](http://sourceforge.net/projects/mingw-w64/files/mingw-w64/mingw-w64-release).
-Then extract the package, compile winpthreads, and install following these
-instructions (replace v3.2.0 with the version you downloaded):
-
-```bash
-tar -xjf mingw-w64-v3.2.0.tar.bz2
-cd mingw-w64-v3.2.0/mingw-w64-libraries/winpthreads
-TARGET=x86_64-pc-mingw32 && ./configure --prefix=/usr/$TARGET/usr --host=$TARGET --target=$TARGET --enable-static --disable-shared
-make
-sudo make install
-```
-
 Make sure *TARGET* is set appropriately.
 
 ## CMake
@@ -190,6 +175,6 @@ cmake -DCMAKE_TOOLCHAIN_FILE=x86_64-pc-mingw32.cmake ...
 ```
 
 replacing *...* with the cmake parameters needed for your particular project,
-and *x86_64-pc-mingw32.cmake* with the file downloaded from
+and *x86_64-w64-mingw32.cmake* with the file downloaded from
 [toolchain](cmake/).
 
